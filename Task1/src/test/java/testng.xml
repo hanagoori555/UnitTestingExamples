@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite1">
+
+    <!-- Провайдер для проверки класса File -->
+    <test name="filesData">
+        <classes>
+            <class name="TestFile"></class>
+        </classes>
+    </test>
+
+    <!-- Тест основных методов работы с File Storage (позитивный) -->
+    <test name="testFilesForStorage">
+        <classes>
+            <class name="WriteExceptionTest"></class>
+            <class name="DeleteAndIsExistTest"></class>
+            <class name="getFilesTest"></class>
+        </classes>
+    </test>
+
+    <!-- Тест конструктора (позитивный) -->
+    <test name="testSizeData">
+        <classes>
+            <class name="TestFileStorage">
+            </class>
+        </classes>
+    </test>
+
+    <!-- Тест записи уже существующего файла -->
+    <test name="testFileExistException">
+        <classes>
+            <class name="WriteExceptionTest"></class>
+        </classes>
+    </test>
+
+    <test name="testConstructorException">
+        <groups>
+            <run>
+                <exclude name="a"/>
+                <exclude name="write"/>
+                <exclude name="delete"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="TestFileStorage">
+            </class>
+        </classes>
+    </test>
+
+    <test name="testFilesForDelete">
+        <classes>
+            <class name="DeleteAndIsExistTest"></class>
+        </classes>
+    </test>
+
+
+</suite>
