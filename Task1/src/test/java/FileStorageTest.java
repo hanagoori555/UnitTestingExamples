@@ -1,49 +1,35 @@
 import exception.FileNameAlreadyExistsException;
+import files.File;
+import files.FileStorage;
 import org.testng.Assert;
-import org.testng.annotations.BeforeGroups;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
-import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FileStorageTest {
+    private final String FILE_WAS_NOT_WRITTEN_EXCEPTION = "The file wasn't written";
 
-    public final String MAX_SIZE_EXCEPTION = "DIFFERENT MAX SIZE";
-    public final String NULL_FILE_EXCEPTION = "NULL FILE";
-    public final String SPACE_STRING = " ";
-    public final String FILE_PATH_STRING = "@D:\\JDK-intellij-downloader-info.txt";
-    public final String CONTENT_STRING = "Some text";
-    public final String REPEATED_STRING = "AA";
-    public final String WRONG_SIZE_CONTENT_STRING = "TEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtext" +
-            "TEXTtextTEXTtextTEXTtextTEXTtextTEXTtext" +
-            "TEXTtextTEXTtextTEXTtextTEXTtextTEXTtext" +
-            "TEXTtextTEXTtextTEXTtextTEXTtextTEXTtext" +
-            "TEXTtextTEXTtextTEXTtextTEXTtextTEXTtext";
-    public final String TIC_TOC_TOE_STRING = "tictoctoe.game";
+    private final String SPACE_STRING = " ";
+    private final String FILE_PATH_STRING = "@D:\\JDK-intellij-downloader-info.txt";
+    private final String CONTENT_STRING = "Some text";
+    private final String REPEATED_STRING = "AA";
+    private final String WRONG_SIZE_CONTENT_STRING = "TEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtextTEXTtext";
+    private final String TIC_TOC_TOE_STRING = "tictoctoe.game";
 
-    public final int NEW_SIZE = 5;
-    public final int TWENTY_ONE = 21;
-    public final int FIFTY = -50;
-    public final int ZERO = 0;
+    private final ArrayList<File> files = new ArrayList<>(Arrays.asList(new File(FILE_PATH_STRING, CONTENT_STRING),
+            new File(SPACE_STRING, WRONG_SIZE_CONTENT_STRING),new File(REPEATED_STRING, CONTENT_STRING)));
 
-    public FileStorage storage;
+    private final int NEW_SIZE = 5;
 
     @BeforeTest
-    public void setUp(){
+    public void setStorage(){
         storage = new FileStorage(NEW_SIZE);
     }
 
-    /* Метод, выполняемый перед группами */
-    @BeforeGroups (groups = "testExistFunction")
-    public void setNewStorage(){
-        storage = new FileStorage();
-    }
-
-    /* ПРОВАЙДЕРЫ */
-    @DataProvider(name = "testSizeData")
-    public Object[][] newData() {
-        return new Object[][]{{TWENTY_ONE}, {FIFTY}, {ZERO}};
+    @BeforeMethod
+    public void setNewStorage() {
+        storage.deleteAllFiles();
     }
 
     @DataProvider(name = "testFilesForStorage")
@@ -63,69 +49,91 @@ public class FileStorageTest {
         return new Object[][] { {new File (null, null)}, {null} };
     }
 
-    @DataProvider(name = "testFileForException")
-    public Object[][] newExceptionFile() {
-        return new Object[][] { {new File(REPEATED_STRING, CONTENT_STRING)} };
-    }
+    public FileStorage storage;
 
-
-    /* Тестирование конструктора */
-    @Test (dataProvider = "testSizeData")
-    public void testFileStorage(int size) {
+    /**
+     * Тест на добавлние файла
+     * @param file
+     */
+    @Test (dataProvider = "testFilesForStorage")
+    public void writeUniqueFile(File file) {
         try {
-            storage = new FileStorage(size);
-            Field field = FileStorage.class.getDeclaredField("maxSize");
-            field.setAccessible(true);
-            Assert.assertEquals( (int) field.getDouble(storage), size, MAX_SIZE_EXCEPTION );
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /* Тестирование записи файла */
-    @Test (dataProvider = "testFilesForStorage", groups = "testExistFunction")
-    public void testWrite(File file) throws FileNameAlreadyExistsException {
-        System.out.println(file.getFilename());
-        Assert.assertTrue(storage.write(file));
-    }
-
-    /* Тестирование записи дублирующегося файла */
-    @Test (dataProvider = "testFileForException", expectedExceptions = FileNameAlreadyExistsException.class)
-    public void testWriteException(File file) throws FileNameAlreadyExistsException {
-        Assert.assertTrue(storage.write(file));
-    }
-
-    /* Тестирование проверки существования файла */
-    @Test (dataProvider = "testFilesForStorage", groups = "testExistFunction")
-    public void testIsExists(File file) {
-        String name = file.getFilename();
-        Assert.assertFalse(storage.isExists(name));
-        try {
-            storage.write(file);
+            Assert.assertTrue(storage.write(file), FILE_WAS_NOT_WRITTEN_EXCEPTION);
         } catch (FileNameAlreadyExistsException e) {
             e.printStackTrace();
         }
     }
 
-    /* Тестирование удаления файла */
-    @Test (dataProvider = "testFilesForDelete", dependsOnMethods = "testFileStorage")
-    public void testDelete(String fileName) {
+    /**
+     * Тест на добавление существующего файла
+     * @param file
+     */
+    @Test (dataProvider = "testFilesForStorage")
+    public void writeExistingFile(File file) {
+        try {
+            storage.write(file);
+            Assert.assertFalse(storage.write(file));
+        } catch (FileNameAlreadyExistsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Проверка существоания файла
+     * @param file
+     */
+    @Test (dataProvider = "testFilesForStorage")
+    public void checkIsFileExist(File file) {
+        try {
+            storage.write(file);
+            Assert.assertTrue(storage.isExists(file.getFilename()));
+        } catch (FileNameAlreadyExistsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Тестирование удаления файла
+     * @param fileName
+     */
+    @Test (dataProvider = "testFilesForDelete")
+    public void DeleteTest(String fileName) {
+        setFilesList();
         Assert.assertTrue(storage.delete(fileName));
     }
 
-    /* Тестирование получения файлов */
+    /**
+     *  Тестирование получения файла
+     * @param file
+     */
+    @Test (dataProvider = "testFilesForStorage")
+    public void testGetFile(File file) {
+        try {
+            storage.write(file);
+            Assert.assertEquals(storage.getFile(file.getFilename()), file);
+        } catch (FileNameAlreadyExistsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *  Тестирование получения файлов
+     */
     @Test
-    public void testGetFiles(){
+    public void testGetFiles() {
+        setFilesList();
         for (File el: storage.getFiles()) {
             Assert.assertNotNull(el);
         }
     }
 
-    /* Тестирование получения файла */
-    @Test (dataProvider = "testFilesForStorage")
-    public void testGetFile(File file) {
-        Assert.assertEquals(storage.getFile(file.getFilename()), file);
+    private void setFilesList() {
+        try {
+            for (File f : files) {
+                storage.write(f);
+            }
+        } catch (FileNameAlreadyExistsException e) {
+            e.printStackTrace();
+        }
     }
 }
