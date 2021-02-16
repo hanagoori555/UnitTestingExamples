@@ -1,4 +1,6 @@
 import exception.FileNameAlreadyExistsException;
+import files.File;
+import files.FileStorage;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeTest;

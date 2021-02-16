@@ -1,3 +1,5 @@
+package files;
+
 import exception.FileNameAlreadyExistsException;
 
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ public class FileStorage {
 
     /**
      * Construct object and set max storage size and available size according passed values
-     * @param size FileStorage size
+     * @param size files.FileStorage size
      */
     public FileStorage(int size) {
         maxSize = size;
@@ -82,11 +84,18 @@ public class FileStorage {
     public File getFile(String fileName) {
         if (isExists(fileName)) {
             for (File file: files) {
-                if (file.getFilename().equals(fileName)) {
+                if (file.getFilename().contains(fileName)) {
                     return file;
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * Remove all files
+     */
+    public void deleteAllFiles() {
+        files.removeAll(files);
     }
 }
