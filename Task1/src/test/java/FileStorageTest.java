@@ -32,13 +32,13 @@ public class FileStorageTest {
     public FileStorage storage;
 
     @BeforeTest
-    public void setUp(){
+    public void setUp() {
         storage = new FileStorage(NEW_SIZE);
     }
 
     /* Метод, выполняемый перед группами */
     @BeforeGroups(groups = "testExistFunction")
-    public void setNewStorage(){
+    public void setNewStorage() {
         storage = new FileStorage();
     }
 
@@ -70,12 +70,12 @@ public class FileStorageTest {
         return new Object[][] { {new File(REPEATED_STRING, CONTENT_STRING)} };
     }
 
-
-    /* Тестирование конструктора */
+    /* Тестирование конструктора – рефлексия */
     @Test(dataProvider = "testSizeData")
     public void testFileStorage(int size) {
         try {
             storage = new FileStorage(size);
+
             Field field = FileStorage.class.getDeclaredField("maxSize");
             field.setAccessible(true);
             Assert.assertEquals( (int) field.getDouble(storage), size, MAX_SIZE_EXCEPTION );
@@ -89,7 +89,6 @@ public class FileStorageTest {
     /* Тестирование записи файла */
     @Test (dataProvider = "testFilesForStorage", groups = "testExistFunction")
     public void testWrite(File file) throws FileNameAlreadyExistsException {
-        System.out.println(file.getFilename());
         Assert.assertTrue(storage.write(file));
     }
 

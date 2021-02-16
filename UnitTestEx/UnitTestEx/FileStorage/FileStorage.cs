@@ -34,13 +34,20 @@ namespace UnitTestEx
          * @throws FileNameAlreadyExistsException in case of already existent filename
          */
         public bool Write(File file) {
+            // Проверка существования файла
             if (IsExists(file.GetFilename())) {
+                //Если файл уже есть, то кидаем ошибку
                 throw new FileNameAlreadyExistsException();
             }
+
+            //Проверка того, размер файла не привышает доступный объем памяти
             if (file.GetSize() >= availableSize) {
                 return false;
             }
+
+            // Добалвяем файл в лист
             files.Add(file);
+            // Добалвяем файл в лист
             availableSize -= file.GetSize();
 
             return true;
@@ -52,7 +59,9 @@ namespace UnitTestEx
          * @return result of checking
          */
         public bool IsExists(String fileName) {
+            // Для каждого элемента с типом File из Листа files
             foreach (File file in files) {
+                // Проверка имени
                 if (file.GetFilename().Contains(fileName)) {
                     return true;
                 }

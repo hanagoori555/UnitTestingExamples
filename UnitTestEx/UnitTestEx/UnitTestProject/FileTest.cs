@@ -29,6 +29,7 @@ namespace UnitTestProject
         public void GetSizeTest(File newFile, String name, String content)
         {
             lenght = content.Length / 2;
+
             Assert.AreEqual(newFile.GetSize(), lenght, SIZE_EXCEPTION);
         }
 

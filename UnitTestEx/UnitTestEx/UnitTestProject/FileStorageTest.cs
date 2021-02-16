@@ -49,8 +49,8 @@ namespace UnitTestProject
 
         /* Тестирование записи файла */
         [Test, TestCaseSource(nameof(NewFilesData))]
-        public void WriteTest(File file) {
-            Console.WriteLine(file.GetFilename());
+        public void WriteTest(File file) 
+        {
             Assert.True(storage.Write(file));
             storage.DeleteAllFiles();
         }
@@ -82,6 +82,7 @@ namespace UnitTestProject
             } catch (FileNameAlreadyExistsException e) {
                 Console.WriteLine(String.Format("Exception {0} in method {1}", e.GetBaseException(), MethodBase.GetCurrentMethod().Name));
             }
+            Assert.True(storage.IsExists(name));
             storage.DeleteAllFiles();
         }
 
@@ -102,12 +103,17 @@ namespace UnitTestProject
             }
         }
 
+        // Почти эталонный
         /* Тестирование получения файла */
         [Test, TestCaseSource(nameof(NewFilesData))]
-        public void GetFileTest(File file) 
+        public void GetFileTest(File expectedFile) 
         {
-            storage.Write(file);
-            Assert.AreEqual(storage.GetFile(file.GetFilename()), file);
+            storage.Write(expectedFile);
+
+            File actualfile = storage.GetFile(expectedFile.GetFilename());
+            bool difference = actualfile.GetFilename().Equals(expectedFile.GetFilename()) && actualfile.GetSize().Equals(expectedFile.GetSize());
+
+            Assert.IsFalse(difference, string.Format("There is some differences in {0} or {1}", expectedFile.GetFilename(), expectedFile.GetSize()));
         }
     }
 }

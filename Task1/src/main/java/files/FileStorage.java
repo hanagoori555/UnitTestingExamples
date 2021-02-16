@@ -25,7 +25,6 @@ public class FileStorage {
     public FileStorage() {
     }
 
-
     /**
      * Write file in storage if filename is unique and size is not more than available size
      * @param file to save in file storage
