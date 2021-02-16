@@ -35,7 +35,7 @@ public class FileStorageTest {
     }
 
     /* Метод, выполняемый перед группами */
-    @BeforeGroups (groups = "testExistFunction")
+    @BeforeGroups(groups = "testExistFunction")
     public void setNewStorage(){
         storage = new FileStorage();
     }
@@ -70,7 +70,7 @@ public class FileStorageTest {
 
 
     /* Тестирование конструктора */
-    @Test (dataProvider = "testSizeData")
+    @Test(dataProvider = "testSizeData")
     public void testFileStorage(int size) {
         try {
             storage = new FileStorage(size);
