@@ -3,4 +3,4 @@
 
 Task 1 - Java проект
 
-UnitTestingEx - C# проект
+UnitTestEx - C# проект
