@@ -15,6 +15,9 @@ public class FileStorage {
      * @param size files.FileStorage size
      */
     public FileStorage(int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException("Max size cannot be negative");
+        }
         maxSize = size;
         availableSize += maxSize;
     }
@@ -40,7 +43,6 @@ public class FileStorage {
         }
         files.add(file);
         availableSize -= file.getSize();
-
         return true;
     }
 
